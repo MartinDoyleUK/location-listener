@@ -1,0 +1,83 @@
+{
+  "name": "@martindoyleuk/location-listener",
+  "description": "A polyfill to add the missing location changed event to the browser, and a React hook to go alongside it",
+  "keywords": [
+    "browser",
+    "window",
+    "location",
+    "change",
+    "event",
+    "listener",
+    "react",
+    "hook"
+  ],
+  "version": "0.0.1",
+  "author": {
+    "name": "Martin Doyle",
+    "email": "npm@martindoyle.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/MartinDoyleUK/location-listener",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MartinDoyleUK/location-listener"
+  },
+  "bugs": {
+    "url": "https://github.com/MartinDoyleUK/location-listener/issues"
+  },
+  "packageManager": "yarn@3.1.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "----------------BUILDING----------------": "",
+    "build:clean": "run-s clean build",
+    "build:watch:clean": "run-s clean build:watch",
+    "build:watch": "run-p copy:watch compile:watch",
+    "build": "run-p copy build",
+    "compile:watch": "tsc --watch",
+    "compile": "tsc",
+    "copy:clean": "run-s clean copy",
+    "copy:watch": "copy-and-watch --watch \"src/**/*.txt\" \"dist\"",
+    "copy": "copyfiles -u 1 src/**/*.txt dist/",
+    "postinstall": "husky install",
+    "postpublish": "pinst --enable",
+    "prepublishOnly": "pinst --disable",
+    "----------------CLEANING----------------": "",
+    "clean": "del-cli dist/",
+    "----------------HOOKS----------------": "",
+    "hook:pre-commit": "yarn lint",
+    "----------------LINTING----------------": "",
+    "lint:checktypes": "tsc --noEmit",
+    "lint:eslint:fix": "eslint --fix .",
+    "lint:eslint": "eslint .",
+    "lint:fix": "run-p --aggregate-output --print-label lint:eslint:fix lint:prettier:fix lint:checktypes",
+    "lint:prettier:fix": "prettier --ignore-unknown --list-different --write .",
+    "lint:prettier": "prettier --ignore-unknown --check .",
+    "lint": "run-p --aggregate-output --print-label lint:eslint lint:prettier lint:checktypes",
+    "----------------RUNNING----------------": "",
+    "dev": "nodemon --config bin/nodemon/dev.json",
+    "start:clean": "run-s build:clean start",
+    "start": "node --experimental-specifier-resolution=node --no-warnings dist/index.js --runAll"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^16.1.0",
+    "@commitlint/config-conventional": "^16.0.0",
+    "@sindresorhus/tsconfig": "^2.0.0",
+    "@types/lodash": "^4.14.178",
+    "del-cli": "^4.0.1",
+    "eslint": "^8.8.0",
+    "eslint-config-canonical": "^33.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "husky": "^7.0.4",
+    "npm-run-all": "^4.1.5",
+    "pinst": "^2.1.6",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.4"
+  }
+}

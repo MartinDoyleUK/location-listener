@@ -1,0 +1,59 @@
+{
+  "env": {
+    "browser": true,
+    "jest": false,
+    "node": false
+  },
+  "extends": [
+    "canonical",
+    "canonical/node",
+    "canonical/typescript",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.eslint.json"
+  },
+  "plugins": ["import"],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      2,
+      {
+        "default": "array"
+      }
+    ],
+    "@typescript-eslint/consistent-type-definitions": [2, "interface"],
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "canonical/destructuring-property-newline": 0,
+    "canonical/filename-match-regex": [2, "^[a-z0-9-]+$", true],
+    "canonical/import-specifier-newline": 0,
+    "import/order": [
+      2,
+      {
+        "alphabetize": {
+          "caseInsensitive": true,
+          "order": "asc"
+        },
+        "groups": [
+          "type",
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "always"
+      }
+    ],
+    "no-console": 0,
+    "unicorn/prefer-node-protocol": 0, // Clashes with "import/order"
+    "unicorn/prevent-abbreviations": 0
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    }
+  }
+}

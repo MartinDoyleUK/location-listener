@@ -1,0 +1,10 @@
+{
+  "extends": "@sindresorhus/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "ES2020",
+    "outDir": "dist",
+    "resolveJsonModule": true
+  },
+  "include": ["src"]
+}
