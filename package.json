@@ -36,13 +36,10 @@
     "----------------BUILDING----------------": "",
     "build:clean": "run-s clean build",
     "build:watch:clean": "run-s clean build:watch",
-    "build:watch": "run-p copy:watch compile:watch",
-    "build": "run-p copy build",
+    "build:watch": "run-p compile:watch",
+    "build": "yarn compile",
     "compile:watch": "tsc --watch",
     "compile": "tsc",
-    "copy:clean": "run-s clean copy",
-    "copy:watch": "copy-and-watch --watch \"src/**/*.txt\" \"dist\"",
-    "copy": "copyfiles -u 1 src/**/*.txt dist/",
     "postinstall": "husky install",
     "postpublish": "pinst --enable",
     "prepublishOnly": "pinst --disable",
@@ -57,11 +54,7 @@
     "lint:fix": "run-p --aggregate-output --print-label lint:eslint:fix lint:prettier:fix lint:checktypes",
     "lint:prettier:fix": "prettier --ignore-unknown --list-different --write .",
     "lint:prettier": "prettier --ignore-unknown --check .",
-    "lint": "run-p --aggregate-output --print-label lint:eslint lint:prettier lint:checktypes",
-    "----------------RUNNING----------------": "",
-    "dev": "nodemon --config bin/nodemon/dev.json",
-    "start:clean": "run-s build:clean start",
-    "start": "node --experimental-specifier-resolution=node --no-warnings dist/index.js --runAll"
+    "lint": "run-p --aggregate-output --print-label lint:eslint lint:prettier lint:checktypes"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
