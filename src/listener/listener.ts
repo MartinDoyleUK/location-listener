@@ -59,8 +59,8 @@ export class Listener {
         // Fire-and-forget the callbacks, to avoid them blocking the loop
         window.setTimeout(() => {
           try {
-            // eslint-disable-next-line node/callback-return
-            callback(oldValue, newValue);
+            // eslint-disable-next-line node/callback-return, node/no-callback-literal
+            callback({ newValue, oldValue });
           } catch (error) {
             console.error(
               'Error occurred while running callback on location change',
@@ -109,6 +109,11 @@ export class Listener {
       callback,
       options,
     });
+
+    if (options.immediatelySendValues) {
+      // eslint-disable-next-line node/callback-return, node/no-callback-literal
+      callback({ newValue: this.lastLocValues });
+    }
 
     this.startListening();
 

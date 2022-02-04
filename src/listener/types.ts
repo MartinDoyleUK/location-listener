@@ -5,10 +5,10 @@ export interface LocationValues {
   search: string;
 }
 
-export type CallbackFn = (
-  oldValue: LocationValues,
-  newValue: LocationValues,
-) => void;
+export type CallbackFn = (values: {
+  newValue: LocationValues;
+  oldValue?: LocationValues;
+}) => void;
 
 export type UnsubscribeFn = () => void;
 
@@ -16,7 +16,7 @@ export interface ListenOptions {
   ignoreHashChange?: boolean;
   ignorePathChange?: boolean;
   ignoreSearchChange?: boolean;
-  immediatelySendLocation?: boolean;
+  immediatelySendValues?: boolean;
 }
 
 export type ListenFn = (

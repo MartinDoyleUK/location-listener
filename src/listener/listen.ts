@@ -1,6 +1,7 @@
 import type { ListenFn } from './types';
 
-import { LOCATION_LISTENER_GUID } from './constants';
+import { version as packageVersion } from '../../package.json';
+
 import { Listener } from './listener';
 
 /**
@@ -12,19 +13,25 @@ import { Listener } from './listener';
  * if the callback function is the same.
  *
  * @param callback The callback to run when the location changes
- * @param options Options defining when the listener function should be called
+ * @param [options] Optional object defining when the listener function should be called
+ * @param [options.ignoreHashChange] Do not fire on hash changes
+ * @param [options.ignorePathChange] Do not fire on path changes
+ * @param [options.ignoreSearchChange] Do not fire on search changes
+ * @param [options.immediatelySendValues] Immediately send current values to callback
  * @returns An unsubscribe function
  */
 export const listen: ListenFn = (callback, options = {}) => {
-  // Ensure an instance exists
-  if (window[LOCATION_LISTENER_GUID] === undefined) {
-    window[LOCATION_LISTENER_GUID] = new Listener();
+  if (window['@martindoyleuk/location-listener'] === undefined) {
+    window['@martindoyleuk/location-listener'] = {};
   }
 
-  // Grab the listener
-  const listener = window[LOCATION_LISTENER_GUID];
-  const unsubscribe = listener.subscribe(callback, options);
+  const namespace = window['@martindoyleuk/location-listener'];
 
-  // Pass back the unsubscribe function
-  return unsubscribe;
+  if (namespace[packageVersion] === undefined) {
+    namespace[packageVersion] = new Listener();
+  }
+
+  const listener = namespace[packageVersion]!;
+
+  return listener.subscribe(callback, options);
 };
