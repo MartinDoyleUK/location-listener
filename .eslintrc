@@ -6,7 +6,11 @@
   },
   "extends": [
     "canonical",
+    "canonical/browser",
+    "canonical/json",
+    "canonical/jsx-a11y",
     "canonical/node",
+    "canonical/react",
     "canonical/typescript",
     "plugin:import/typescript",
     "prettier"
@@ -17,17 +21,24 @@
   },
   "plugins": ["import"],
   "rules": {
+    // Prefer type[] over Array<type>
     "@typescript-eslint/array-type": [
       2,
       {
         "default": "array"
       }
     ],
+    // Prefer interfaces, where possible, to types
     "@typescript-eslint/consistent-type-definitions": [2, "interface"],
-    "@typescript-eslint/no-non-null-assertion": 0,
+    // Clashes with prettier
     "canonical/destructuring-property-newline": 0,
-    "canonical/filename-match-regex": [2, "^[a-z0-9-]+$", true],
+    // Clashes with prettier
+    "canonical/export-specifier-newline": 0,
+    // Make sure filenames are kebab case
+    "canonical/filename-match-regex": [2, "^[a-z0-9-.]+$", true],
+    // Clashes with prettier
     "canonical/import-specifier-newline": 0,
+    // Custom ordering
     "import/order": [
       2,
       {
@@ -47,9 +58,10 @@
         "newlines-between": "always"
       }
     ],
-    "no-console": 0,
-    "unicorn/prefer-node-protocol": 0, // Clashes with "import/order"
-    "unicorn/prevent-abbreviations": 0
+    // Warn when console left in
+    "no-console": 1,
+    // Clashes with "import/order"
+    "unicorn/prefer-node-protocol": 0
   },
   "settings": {
     "import/parsers": {

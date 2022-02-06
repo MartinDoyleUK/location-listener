@@ -1,3 +1,7 @@
+# Folders (A-Z)
 /node_modules/
 /dist/
 /coverage/
+
+# Files (A-Z)
+package.json

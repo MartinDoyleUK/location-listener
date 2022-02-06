@@ -1,51 +1,66 @@
 import type {
   LocationValues,
-  CallbackFn,
-  UnsubscribeFn,
+  CallbackFunction,
+  UnsubscribeFunction,
   ListenOptions,
-} from './types';
+  ChangedProperties,
+} from '../types';
 
-import { LISTEN_INTERVAL_MS } from './constants';
+import { LISTEN_TIMEOUT_MS } from '../constants';
+import { getLocationValues } from '../utils';
 
 interface Subscription {
-  callback: CallbackFn;
+  callback: CallbackFunction;
   options: ListenOptions;
 }
-
-const getLocValues = (loc: Location): LocationValues => {
-  const { hash, href, pathname, search } = loc;
-  return { hash, href, pathname, search };
-};
 
 export class Listener {
   private readonly subscribers = new Map<number, Subscription>();
 
   private isListening = false;
 
-  private interval = 0;
+  private timeout = 0;
 
   private lastLocValues: LocationValues;
 
   public constructor() {
-    this.lastLocValues = getLocValues(window.location);
+    this.lastLocValues = getLocationValues();
   }
 
   private checkForChanges() {
-    const newLocValues = getLocValues(window.location);
+    const newLocValues = getLocationValues();
     if (newLocValues.href !== this.lastLocValues.href) {
       this.notifySubscribers(this.lastLocValues, newLocValues);
       // Avoiding mutation bugs
       this.lastLocValues = { ...newLocValues };
     }
+
+    // Setup the next check
+    this.timeout = window.setTimeout(() => {
+      this.checkForChanges();
+    }, LISTEN_TIMEOUT_MS);
   }
 
   private notifySubscribers(
-    oldValue: LocationValues,
-    newValue: LocationValues,
+    oldValues: LocationValues,
+    newValues: LocationValues,
   ) {
-    const isHashChanged = oldValue.hash !== newValue.hash;
-    const isSearchChanged = oldValue.search !== newValue.search;
-    const isPathChanged = oldValue.pathname !== newValue.pathname;
+    const isHashChanged = oldValues.hash !== newValues.hash;
+    const isSearchChanged = oldValues.search !== newValues.search;
+    const isPathChanged = oldValues.pathname !== newValues.pathname;
+
+    const changedProperties: ChangedProperties = ['href'];
+    if (isHashChanged) {
+      changedProperties.push('hash');
+    }
+
+    if (isSearchChanged) {
+      changedProperties.push('search');
+    }
+
+    if (isPathChanged) {
+      changedProperties.push('pathname');
+    }
 
     for (const subscription of this.subscribers.values()) {
       const { callback, options } = subscription;
@@ -53,39 +68,42 @@ export class Listener {
       const shouldNotify =
         (isHashChanged && !options.ignoreHashChange) ||
         (isSearchChanged && !options.ignoreSearchChange) ||
-        (isPathChanged && !options.ignorePathChange);
+        (isPathChanged && !options.ignorePathnameChange);
 
       if (shouldNotify) {
         // Fire-and-forget the callbacks, to avoid them blocking the loop
         window.setTimeout(() => {
           try {
             // eslint-disable-next-line node/callback-return, node/no-callback-literal
-            callback({ newValue, oldValue });
+            callback({ changedProperties, newValues, oldValues });
           } catch (error) {
+            // We want to display a console error here
+            // eslint-disable-next-line no-console
             console.error(
               'Error occurred while running callback on location change',
               {
-                newValue,
-                oldValue,
+                newValues,
+                oldValues,
               },
               error,
             );
           }
-        });
+        }, 0);
       }
     }
   }
 
   private startListening() {
     if (!this.isListening) {
-      this.interval = window.setInterval(() => {
+      this.isListening = true;
+      this.timeout = window.setTimeout(() => {
         this.checkForChanges();
-      }, LISTEN_INTERVAL_MS);
+      }, LISTEN_TIMEOUT_MS);
     }
   }
 
   private stopListening() {
-    window.clearInterval(this.interval);
+    window.clearTimeout(this.timeout);
     this.isListening = false;
   }
 
@@ -97,9 +115,9 @@ export class Listener {
   }
 
   public subscribe(
-    callback: CallbackFn,
+    callback: CallbackFunction,
     options: ListenOptions,
-  ): UnsubscribeFn {
+  ): UnsubscribeFunction {
     let subscriberKey = Date.now();
     while (this.subscribers.has(subscriberKey)) {
       subscriberKey = Date.now();
@@ -112,7 +130,11 @@ export class Listener {
 
     if (options.immediatelySendValues) {
       // eslint-disable-next-line node/callback-return, node/no-callback-literal
-      callback({ newValue: this.lastLocValues });
+      callback({
+        changedProperties: ['hash', 'href', 'pathname', 'search'],
+        newValues: this.lastLocValues,
+        oldValues: this.lastLocValues,
+      });
     }
 
     this.startListening();

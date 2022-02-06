@@ -3,8 +3,6 @@ import type { Listener } from './listener/listener';
 
 declare global {
   interface Window {
-    '@martindoyleuk/location-listener': {
-      [version: string]: Listener;
-    };
+    'martindoyleuk-location-listener'?: Listener;
   }
 }
